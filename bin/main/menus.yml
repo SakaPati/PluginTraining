@@ -1,0 +1,21 @@
+Main:
+  title: "Меню"
+  size: 27
+  buttons:
+    test:
+      slot: 11
+      material: diamond_sword
+      enchantment:
+        looting: 10
+        sharpness: 11
+      name: "Меч погибели"
+      lore: "Меч, который стремился стать величайшим оружием"
+      command: "/give @p minecraft:diamond"
+
+    test1:
+      slot: 13
+      material: stone
+      enchantment: null
+      name: "Камень, просто камень"
+      lore: null
+      command: "/setblock ~ ~1 ~ minecraft:stone"

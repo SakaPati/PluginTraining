@@ -12,11 +12,13 @@ public final class Level2 extends JavaPlugin {
     public static Level2 getInstance() {
         return instance;
     }
+    public static DataYML config;
 
     @Override
     public void onEnable() {
         instance = this;
         PlayerScoreboard sbManager = new PlayerScoreboard();
+        config = new DataYML(this, getDataFolder(), "menus.yml");
 
         getServer().getPluginManager().registerEvents(new PlayerInteract(), this);
         getServer().getPluginManager().registerEvents(new EntityTargetLivingEntity(), this);
@@ -36,6 +38,7 @@ public final class Level2 extends JavaPlugin {
             commands.registrar().register(SpawnMerchant.build);
             commands.registrar().register(TabNameCommand.build);
             commands.registrar().register(OpenMenuCommand.build);
+            commands.registrar().register(OpenInvCommand.build);
         });
     }
 

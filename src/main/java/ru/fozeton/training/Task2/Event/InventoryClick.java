@@ -15,7 +15,7 @@ import ru.fozeton.training.Task2.Commands.OpenInvCommand;
 import ru.fozeton.training.Task2.api.MenuManager;
 
 public class InventoryClick implements Listener {
-    private static final FileConfiguration config = Level2.config.getData();
+    private static final FileConfiguration config = Level2.configMenu.getData();
 
     // 10
     @EventHandler

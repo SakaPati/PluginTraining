@@ -1,0 +1,32 @@
+ZombieKing:
+  mobType: ZOMBIE
+  name: "ZombieKing"
+  health: 1
+  effects:
+    speed:
+      duration: 10
+      level: 5
+    jump_boost:
+      duration: 5
+      level: 1
+    regeneration:
+      duration: 15
+      level: 2
+  equipments:
+    HEAD: diamond_helmet
+    CHEST: diamond_chestplate
+    LEGS: diamond_leggings
+    FEET: diamond_boots
+  drops:
+    item1:
+      name: "Aboba"
+      lore: "Мяу, мяу, мяяяяу"
+      material: stone
+      enchantments:
+        looting: 10
+        sharpness: 100
+    item2:
+      name: "Atota"
+      lore: "Гав, гав, ГАВ!!!"
+      material: diamond_sword
+      enchantments: null

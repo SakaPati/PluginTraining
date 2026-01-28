@@ -24,7 +24,7 @@ import ru.fozeton.training.Level2;
 import java.util.List;
 
 public class OpenInvCommand {
-    private static final FileConfiguration configData = Level2.config.getData();
+    private static final FileConfiguration configData = Level2.configMenu.getData();
     public static String currentMenu;
 
     public static LiteralCommandNode<CommandSourceStack> build = Commands.literal("openinv")
@@ -65,7 +65,7 @@ public class OpenInvCommand {
 
                             if (enchants != null) {
                                 for (String enchantKeys : enchants.getKeys(false)) {
-                                    NamespacedKey enchantKey = NamespacedKey.fromString("minecraft:" + enchantKeys);
+                                    NamespacedKey enchantKey = NamespacedKey.minecraft(enchantKeys);
                                     int level = enchants.getInt(enchantKeys);
 
                                     Enchantment enchantment = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(enchantKey);

@@ -28,6 +28,7 @@ public final class Level2 extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerInteractEntity(), this);
         getServer().getPluginManager().registerEvents(new FurnaceStartSmelt(), this);
         getServer().getPluginManager().registerEvents(new InventoryClick(), this);
+        getServer().getPluginManager().registerEvents(new InventoryOpen(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoin(sbManager), this);
         getServer().getPluginManager().registerEvents(new EntityDeath(sbManager), this);
         getServer().getPluginManager().registerEvents(new PlayerDeath(sbManager), this);

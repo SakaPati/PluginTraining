@@ -6,6 +6,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ru.fozeton.training.Task2.Commands.*;
 import ru.fozeton.training.Task2.Event.*;
 import ru.fozeton.training.Task2.PlayerScoreboard;
+import ru.fozeton.training.Task2.WorldGuard.Commands.*;
+import ru.fozeton.training.Task2.WorldGuard.Events.*;
 
 public final class Level2 extends JavaPlugin {
     public static Level2 instance;
@@ -14,6 +16,7 @@ public final class Level2 extends JavaPlugin {
     }
     public static DataYML configMenu;
     public static DataYML configBoss;
+    public static DataYML configRegion;
 
     @Override
     public void onEnable() {
@@ -21,6 +24,7 @@ public final class Level2 extends JavaPlugin {
         PlayerScoreboard sbManager = new PlayerScoreboard();
         configMenu = new DataYML(this, getDataFolder(), "menus.yml");
         configBoss = new DataYML(this, getDataFolder(), "bosses.yml");
+        configRegion = new DataYML(this, getDataFolder(), "regions.yml");
 
         getServer().getPluginManager().registerEvents(new PlayerInteract(), this);
         getServer().getPluginManager().registerEvents(new EntityTargetLivingEntity(), this);
@@ -29,11 +33,16 @@ public final class Level2 extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FurnaceStartSmelt(), this);
         getServer().getPluginManager().registerEvents(new InventoryClick(), this);
         getServer().getPluginManager().registerEvents(new InventoryOpen(), this);
+
         getServer().getPluginManager().registerEvents(new PlayerJoin(sbManager), this);
         getServer().getPluginManager().registerEvents(new EntityDeath(sbManager), this);
         getServer().getPluginManager().registerEvents(new PlayerDeath(sbManager), this);
         getServer().getPluginManager().registerEvents(new BlockBreak(sbManager), this);
         getServer().getPluginManager().registerEvents(new BlockPlace(sbManager), this);
+
+        getServer().getPluginManager().registerEvents(new ClickBlock(), this);
+        getServer().getPluginManager().registerEvents(new RegionListener(), this);
+
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(SetPosCommand.build);
             commands.registrar().register(SpawnSheepCommand.build);
@@ -43,6 +52,8 @@ public final class Level2 extends JavaPlugin {
             commands.registrar().register(OpenMenuCommand.build);
             commands.registrar().register(OpenInvCommand.build);
             commands.registrar().register(SpawnBossCommand.build);
+
+            commands.registrar().register(RegionCommand.build);
         });
     }
 

@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import ru.fozeton.training.Task2.WorldGuard.RegionManager;
 
 public class RegionListener implements Listener {
@@ -17,7 +18,7 @@ public class RegionListener implements Listener {
         Player player = event.getPlayer();
         Location blockLocation = event.getBlock().getLocation();
 
-        if (RegionManager.checkRegion(blockLocation, player)) {
+        if (RegionManager.checkRegion(blockLocation, player) && !RegionManager.isParty(blockLocation, player)) {
             player.sendMessage("§cВы не можете взаимодействовать с этим блоком");
             event.setCancelled(true);
         }
@@ -28,7 +29,7 @@ public class RegionListener implements Listener {
         Player player = event.getPlayer();
         Location blockLocation = event.getBlock().getLocation();
 
-        if (RegionManager.checkRegion(blockLocation, player)) {
+        if (RegionManager.checkRegion(blockLocation, player) && !RegionManager.isParty(blockLocation, player)) {
             player.sendMessage("§cВы не можете взаимодействовать с этим блоком");
             event.setCancelled(true);
         }
@@ -40,7 +41,7 @@ public class RegionListener implements Listener {
             Player player = event.getPlayer();
             Location blockLocation = event.getClickedBlock().getLocation();
 
-            if (RegionManager.checkRegion(blockLocation, player)) {
+            if (RegionManager.checkRegion(blockLocation, player) && !RegionManager.isParty(blockLocation, player)) {
                 player.sendMessage("§cВы не можете взаимодействовать с этим блоком");
                 event.setCancelled(true);
             }
@@ -54,6 +55,17 @@ public class RegionListener implements Listener {
         if (RegionManager.checkPvP(defender.getLocation(), defender, attacker.getLocation(), attacker)) {
             attacker.sendMessage("§cВы не можете атаковать игрока");
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        Location from = event.getFrom();
+        Location to = event.getTo();
+
+        if (RegionManager.checkRegion(to, player) && !RegionManager.isParty(to, player)) {
+            player.teleport(from);
         }
     }
 }

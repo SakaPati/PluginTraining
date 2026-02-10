@@ -1,5 +1,6 @@
 package ru.fozeton.training.Task2.WorldGuard.Commands;
 
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -66,6 +67,88 @@ public class RegionCommand {
                     .then(Commands.argument("region", StringArgumentType.word())
                             .then(Commands.argument("member", ArgumentTypes.player())
                                     .executes(ctx -> removeParty(ctx, "officers")))))
+            .then(Commands.literal("flag")
+                    .then(Commands.argument("region", StringArgumentType.word())
+                            .then(Commands.literal("PvP")
+                                    .then(Commands.argument("permission", BoolArgumentType.bool())
+                                            .executes(ctx -> {
+                                                Player player = (Player) ctx.getSource().getExecutor();
+                                                String regionName = StringArgumentType.getString(ctx, "region");
+                                                String ownerUUID = configData.getString("Regions." + regionName + ".owner");
+
+                                                if (player != null && ownerUUID != null) {
+                                                    if (!isOwner(player, regionName)) {
+                                                        player.sendMessage("§cВы не владелец региона");
+                                                        return 1;
+                                                    } else if (!configData.isConfigurationSection("Regions." + regionName)) {
+                                                        player.sendMessage("§cРегион не найден");
+                                                        return 1;
+                                                    }
+                                                    boolean permission = BoolArgumentType.getBool(ctx, "permission");
+                                                    configData.set("Regions." + regionName + ".flags.pvp", permission);
+                                                    RegionManager.config.saveData();
+                                                    player.sendMessage("§aФлаг PvP изменен на " + permission);
+                                                }
+                                                return 1;
+                                            })))
+                            .then(Commands.literal("walking")
+                                    .then(Commands.literal("all")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Walking", "all"))))
+                                    .then(Commands.literal("members")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Walking", "members"))))
+                                    .then(Commands.literal("member")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Walking", "member"))))
+                                    .then(Commands.literal("officer")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Walking", "officer"))))
+                            )
+                            .then(Commands.literal("breaking")
+                                    .then(Commands.literal("all")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Breaking", "all"))))
+                                    .then(Commands.literal("members")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Breaking", "members"))))
+                                    .then(Commands.literal("member")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Breaking", "member"))))
+                                    .then(Commands.literal("officer")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Breaking", "officer"))))
+                            )
+                            .then(Commands.literal("placed")
+                                    .then(Commands.literal("all")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Placed", "all"))))
+                                    .then(Commands.literal("members")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Placed", "members"))))
+                                    .then(Commands.literal("member")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Placed", "member"))))
+                                    .then(Commands.literal("officer")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Placed", "officer"))))
+                            )
+                            .then(Commands.literal("interaction")
+                                    .then(Commands.literal("all")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Interaction", "all"))))
+                                    .then(Commands.literal("members")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Interaction", "members"))))
+                                    .then(Commands.literal("member")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Interaction", "member"))))
+                                    .then(Commands.literal("officer")
+                                            .then(Commands.argument("access", BoolArgumentType.bool())
+                                                    .executes(ctx -> editFlags(ctx, "Interaction", "officer"))))
+                            )
+                    )
+            )
             .build();
 
     private static int addParty(CommandContext<CommandSourceStack> ctx, String party) throws CommandSyntaxException {
@@ -79,7 +162,7 @@ public class RegionCommand {
 
 
         if (player != null && ownerUUID != null) {
-            if (!player.getUniqueId().equals(UUID.fromString(ownerUUID))) {
+            if (!isOwner(player, regionName)) {
                 player.sendMessage("§cВы не владелец региона");
                 return 1;
             } else if (!configData.isConfigurationSection("Regions." + regionName)) {
@@ -114,7 +197,7 @@ public class RegionCommand {
         List<String> members = configData.getStringList("Regions." + regionName + "." + party);
 
         if (player != null && ownerUUID != null) {
-            if (player.getUniqueId().equals(UUID.fromString(ownerUUID)) && members.contains(member.getUniqueId().toString())) {
+            if (isOwner(player, regionName) && members.contains(member.getUniqueId().toString())) {
                 members.remove(member.getUniqueId().toString());
                 configData.set("Regions." + regionName + "." + party, members);
                 RegionManager.config.saveData();
@@ -124,5 +207,31 @@ public class RegionCommand {
             player.sendMessage("§cИгрок не найден");
         }
         return 1;
+    }
+
+    private static int editFlags(CommandContext<CommandSourceStack> ctx, String flag, String group) {
+        Player player = (Player) ctx.getSource().getExecutor();
+        String regionName = StringArgumentType.getString(ctx, "region");
+        boolean access = BoolArgumentType.getBool(ctx, "access");
+
+        if (player != null) {
+            if (isOwner(player, regionName)) {
+                configData.set("Regions." + regionName + ".flags." + flag.toLowerCase() + "." + group, access);
+                RegionManager.config.saveData();
+                player.sendMessage("§aФлаг " + flag + " изменен на " + group + " " + access);
+                return 1;
+            }
+            player.sendMessage("§cНе удалось изменить флаг региона");
+        }
+
+        return 1;
+    }
+
+    private static boolean isOwner(Player player, String regionName) {
+        String ownerUUID = configData.getString("Regions." + regionName + ".owner");
+
+        if (player != null && ownerUUID != null) return player.getUniqueId().equals(UUID.fromString(ownerUUID));
+
+        return false;
     }
 }

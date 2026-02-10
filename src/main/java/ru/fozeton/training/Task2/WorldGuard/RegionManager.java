@@ -20,6 +20,28 @@ public class RegionManager {
         config.getData().set(path + ".owner", player.getUniqueId().toString());
         config.getData().set(path + ".officers", List.of());
         config.getData().set(path + ".members", List.of());
+
+        config.getData().set(path + ".flags.pvp", false);
+        config.getData().set(path + ".flags.walking.members", true);
+        config.getData().set(path + ".flags.walking.member", false);
+        config.getData().set(path + ".flags.walking.officer", false);
+        config.getData().set(path + ".flags.walking.all", false);
+
+        config.getData().set(path + ".flags.breaking.members", true);
+        config.getData().set(path + ".flags.breaking.member", false);
+        config.getData().set(path + ".flags.breaking.officer", false);
+        config.getData().set(path + ".flags.breaking.all", false);
+
+        config.getData().set(path + ".flags.placed.members", true);
+        config.getData().set(path + ".flags.placed.member", false);
+        config.getData().set(path + ".flags.placed.officer", false);
+        config.getData().set(path + ".flags.placed.all", false);
+
+        config.getData().set(path + ".flags.interaction.members", true);
+        config.getData().set(path + ".flags.interaction.member", false);
+        config.getData().set(path + ".flags.interaction.officer", false);
+        config.getData().set(path + ".flags.interaction.all", false);
+
         config.getData().set(path + ".world", player.getWorld().getName());
         config.getData().set(path + ".min.x", pos1.getX());
         config.getData().set(path + ".min.y", pos1.getY());
@@ -31,15 +53,29 @@ public class RegionManager {
         config.saveData();
     }
 
+    public static boolean hasFlagPermission(Location loc, Player player, String flag) {
+        boolean members = config.getData().getBoolean("Regions." + getRegionName(loc) + ".flags."+ flag + ".members");
+        boolean member = config.getData().getBoolean("Regions." + getRegionName(loc) + ".flags."+ flag + ".member");
+        boolean officer = config.getData().getBoolean("Regions." + getRegionName(loc) + ".flags."+ flag + ".officer");
+        boolean all = config.getData().getBoolean("Regions." + getRegionName(loc) + ".flags."+ flag + ".all");
+        return isParty(loc, player) && members || isMember(loc, player) && member || isOfficer(loc, player) && officer || all;
+    }
+
+    public static boolean canPvP(Location locationDefender, Player playerDefender, Location locationAttacker, Player playerAttacker) {
+        boolean attackerDefender = checkRegion(locationAttacker, playerDefender);
+        boolean defenderAttacker = checkRegion(locationDefender, playerAttacker);
+        return attackerDefender || defenderAttacker;
+    }
+
     public static boolean checkRegion(Location location, Player player) {
         RegionCuboid cuboid = getCuboid(location);
         return cuboid != null && cuboid.isInside(location) && !cuboid.getOwnerUUID().equals(player.getUniqueId());
     }
 
-    public static boolean checkPvP(Location locationDefender, Player playerDefender, Location locationAttacker, Player playerAttacker) {
-        boolean attackerDefender = checkRegion(locationAttacker, playerDefender);
-        boolean defenderAttacker = checkRegion(locationDefender, playerAttacker);
-        return attackerDefender || defenderAttacker;
+    public static boolean PvPDeny(Location location){
+        String regionName = getRegionName(location);
+        if(regionName == null) return false;
+        return !config.getData().getBoolean("Regions." + regionName + ".flags.pvp");
     }
 
     public static boolean checkInserts(RegionCuboid newRegion) {
@@ -60,20 +96,20 @@ public class RegionManager {
         return false;
     }
 
-//    public static boolean isMember(Location location, Player player) {
-//        List<String> members = config.getData().getStringList("Regions." + getRegionName(location) + ".members");
-//        return members.contains(player.getUniqueId().toString());
-//    }
-//
-//    public static boolean isOfficer(Location location, Player player) {
-//        List<String> officers = config.getData().getStringList("Regions." + getRegionName(location) + ".officers");
-//        return officers.contains(player.getUniqueId().toString());
-//    }
-
     public static boolean isParty(Location location, Player player) {
         List<String> membersParty = config.getData().getStringList("Regions." + getRegionName(location) + ".members");
         List<String> officersParty = config.getData().getStringList("Regions." + getRegionName(location) + ".officers");
         return membersParty.contains(player.getUniqueId().toString()) || officersParty.contains(player.getUniqueId().toString());
+    }
+
+    public static boolean isMember(Location location, Player player) {
+        List<String> membersParty = config.getData().getStringList("Regions." + getRegionName(location) + ".members");
+        return membersParty.contains(player.getUniqueId().toString());
+    }
+
+    public static boolean isOfficer(Location location, Player player) {
+        List<String> officersParty = config.getData().getStringList("Regions." + getRegionName(location) + ".officers");
+        return officersParty.contains(player.getUniqueId().toString());
     }
 
     public static RegionCuboid getCuboid(Location location) {

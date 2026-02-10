@@ -6,8 +6,7 @@ import org.bukkit.World;
 import java.util.UUID;
 
 public class RegionCuboid {
-    private final Location min;
-    private final Location max;
+    private final Location min, max;
     private final UUID ownerUUID;
     private final World world;
     private final double minX, minY, minZ, maxX, maxY, maxZ;

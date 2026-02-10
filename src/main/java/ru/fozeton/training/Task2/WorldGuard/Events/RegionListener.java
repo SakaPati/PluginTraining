@@ -18,7 +18,7 @@ public class RegionListener implements Listener {
         Player player = event.getPlayer();
         Location blockLocation = event.getBlock().getLocation();
 
-        if (RegionManager.checkRegion(blockLocation, player) && !RegionManager.isParty(blockLocation, player)) {
+        if (RegionManager.checkRegion(blockLocation, player) && !RegionManager.hasFlagPermission(blockLocation, player, "breaking")) {
             player.sendMessage("§cВы не можете взаимодействовать с этим блоком");
             event.setCancelled(true);
         }
@@ -29,7 +29,7 @@ public class RegionListener implements Listener {
         Player player = event.getPlayer();
         Location blockLocation = event.getBlock().getLocation();
 
-        if (RegionManager.checkRegion(blockLocation, player) && !RegionManager.isParty(blockLocation, player)) {
+        if (RegionManager.checkRegion(blockLocation, player) && !RegionManager.hasFlagPermission(blockLocation, player, "placed")) {
             player.sendMessage("§cВы не можете взаимодействовать с этим блоком");
             event.setCancelled(true);
         }
@@ -41,7 +41,7 @@ public class RegionListener implements Listener {
             Player player = event.getPlayer();
             Location blockLocation = event.getClickedBlock().getLocation();
 
-            if (RegionManager.checkRegion(blockLocation, player) && !RegionManager.isParty(blockLocation, player)) {
+            if (RegionManager.checkRegion(blockLocation, player) && !RegionManager.hasFlagPermission(blockLocation, player, "interaction")) {
                 player.sendMessage("§cВы не можете взаимодействовать с этим блоком");
                 event.setCancelled(true);
             }
@@ -52,7 +52,7 @@ public class RegionListener implements Listener {
     public void onPlayerAttack(PrePlayerAttackEntityEvent event) {
         if (!(event.getAttacked() instanceof Player defender)) return;
         Player attacker = event.getPlayer();
-        if (RegionManager.checkPvP(defender.getLocation(), defender, attacker.getLocation(), attacker)) {
+        if (RegionManager.canPvP(defender.getLocation(), defender, attacker.getLocation(), attacker) && RegionManager.PvPDeny(defender.getLocation())) {
             attacker.sendMessage("§cВы не можете атаковать игрока");
             event.setCancelled(true);
         }
@@ -64,7 +64,7 @@ public class RegionListener implements Listener {
         Location from = event.getFrom();
         Location to = event.getTo();
 
-        if (RegionManager.checkRegion(to, player) && !RegionManager.isParty(to, player)) {
+        if (RegionManager.checkRegion(to, player) && !RegionManager.hasFlagPermission(to, player, "walking")) {
             player.teleport(from);
         }
     }

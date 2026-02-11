@@ -52,6 +52,7 @@ public final class Level2 extends JavaPlugin {
             commands.registrar().register(OpenMenuCommand.build);
             commands.registrar().register(OpenInvCommand.build);
             commands.registrar().register(SpawnBossCommand.build);
+            commands.registrar().register(SpawnGuardsCommand.build);
 
             commands.registrar().register(RegionCommand.build);
         });

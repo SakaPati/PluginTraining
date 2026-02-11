@@ -31,4 +31,12 @@ public class EntityDamage implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onFallDamage(EntityDamageEvent event) {
+        if(event.getEntity() instanceof Player player && PlayerInteract.ignorDamage.contains(player.getUniqueId())){
+            event.setCancelled(true);
+            PlayerInteract.ignorDamage.remove(player.getUniqueId());
+        }
+    }
 }

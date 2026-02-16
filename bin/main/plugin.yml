@@ -1,5 +1,0 @@
-name: level1
-version: '1.0-SNAPSHOT'
-main: ru.fozeton.training.Level1
-api-version: '1.21'
-authors: [ Fozeton ]

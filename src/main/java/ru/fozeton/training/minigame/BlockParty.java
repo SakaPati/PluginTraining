@@ -19,8 +19,8 @@ import java.util.Random;
 import java.util.function.Consumer;
 
 public class BlockParty {
-    private Random random = new Random();
-    private World world = Bukkit.getWorld("world");
+    private final Random random = new Random();
+    private final World world = Bukkit.getWorld("world");
 
     private Material color;
     private long delay = 5;
@@ -29,7 +29,7 @@ public class BlockParty {
     private boolean running = false;
     private BukkitTask mainTask;
 
-    private Material[] arrColor = new Material[]{
+    private final Material[] arrColor = new Material[]{
             Material.WHITE_CONCRETE,
             Material.LIGHT_GRAY_CONCRETE,
             Material.GRAY_CONCRETE,
@@ -47,7 +47,7 @@ public class BlockParty {
             Material.MAGENTA_CONCRETE,
             Material.PINK_CONCRETE
     };
-    private Map<Material, Component> namedColor = Map.ofEntries(
+    private final Map<Material, Component> namedColor = Map.ofEntries(
             Map.entry(Material.WHITE_CONCRETE, Component.text("Белый", TextColor.color(0xF9FFFE))),
             Map.entry(Material.LIGHT_GRAY_CONCRETE, Component.text("Светло-серый", TextColor.color(0xD3D3D3))),
             Map.entry(Material.GRAY_CONCRETE, Component.text("Серый", TextColor.color(0x7F7F7F))),
@@ -66,13 +66,13 @@ public class BlockParty {
             Map.entry(Material.PINK_CONCRETE, Component.text("Розовый", TextColor.color(0xF2A2C0)))
     );
 
-    private int x1 = 63, z1 = -26;
-    private int x2 = 55, z2 = -18;
+    private final int x1 = 63, z1 = -26;
+    private final int x2 = 55, z2 = -18;
 
-    private int minX = Math.min(x1, x2);
-    private int minZ = Math.min(z1, z2);
-    private int maxX = Math.max(x1, x2);
-    private int maxZ = Math.max(z1, z2);
+    private final int minX = Math.min(x1, x2);
+    private final int minZ = Math.min(z1, z2);
+    private final int maxX = Math.max(x1, x2);
+    private final int maxZ = Math.max(z1, z2);
 
     public void start() {
         if (running) return;
